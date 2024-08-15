@@ -1,0 +1,51 @@
+# NetBeans-specific files
+nbproject/private/
+nbproject/Makefile-*
+nbproject/Package-*
+nbproject/configs/
+nbproject/*.properties
+
+# Build directories
+/build/
+/dist/
+
+# Compiled class files
+*.class
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+*.iml
+.idea/
+.vscode/
+
+# Ignore Maven and Gradle specific directories if used
+/target/
+/out/
+
+/.settings/
+/.project
+.classpath
+
+/src/resources/
+/src/resources/config.properties
+
+# Ignore generated files from testing
+/test-output/
+/test-reports/
+
+# Ignore other generated files
+*.nbattrs
