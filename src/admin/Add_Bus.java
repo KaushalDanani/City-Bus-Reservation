@@ -1,8 +1,12 @@
 package admin;
 
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.swing.JOptionPane;
 import java.sql.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,10 +25,22 @@ public class Add_Bus extends javax.swing.JFrame {
         this.setVisible(true);
     }
     
-    private Connection makeCon(){
+    private Connection makeCon() throws IOException{
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        if (input != null) {
+            props.load(input);
+        } else {
+            throw new FileNotFoundException("Property file not found");
+        }
+
+        String url = props.getProperty("db.url");
+        String username = props.getProperty("db.username");
+        String password = props.getProperty("db.password");
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/city_travels", "root", "mysql@123");
+            Connection con = DriverManager.getConnection(url, username, password);
             return con;
         }
         catch(ClassNotFoundException | SQLException e){
@@ -237,8 +253,13 @@ public class Add_Bus extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please Enter require field!");
         }
         else{
-            Connection con = makeCon();
-            getData(con);
+            try {
+                Connection con = makeCon();
+                getData(con);
+            } catch (IOException ex) {
+                Logger.getLogger(Add_Bus.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             JOptionPane.showMessageDialog(null, "Bus is Added!");
             dispose();
             Admin_Dashboard ad = new Admin_Dashboard();

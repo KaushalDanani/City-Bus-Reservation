@@ -3,7 +3,11 @@ package admin;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -30,14 +34,31 @@ public class EDelete_Bus extends javax.swing.JFrame {
         
         TableHeader();
         
-        con = makeCon();
-        setData(con);
+        Connection con;
+        try {
+            con = makeCon();
+            setData(con);
+        } catch (IOException ex) {
+            Logger.getLogger(EDelete_Bus.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    private Connection makeCon(){
+    private Connection makeCon() throws IOException{
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        if (input != null) {
+            props.load(input);
+        } else {
+            throw new FileNotFoundException("Property file not found");
+        }
+
+        String url = props.getProperty("db.url");
+        String username = props.getProperty("db.username");
+        String password = props.getProperty("db.password");
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/city_travels", "root", "mysql@123");
+            Connection con = DriverManager.getConnection(url, username, password);
             return con;
         }
         catch(ClassNotFoundException | SQLException e){
@@ -277,9 +298,12 @@ public class EDelete_Bus extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_editActionPerformed
 
     private void btn_deletebusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deletebusActionPerformed
-        // TODO add your handling code here:
-        con = makeCon();
-        deleteData(con);
+        try {
+            con = makeCon();
+            deleteData(con);
+        } catch (IOException ex) {
+            Logger.getLogger(EDelete_Bus.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_deletebusActionPerformed
 
     /**

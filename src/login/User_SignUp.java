@@ -40,7 +40,6 @@ public class User_SignUp extends javax.swing.JFrame {
         String url = props.getProperty("db.url");
         String username = props.getProperty("db.username");
         String password = props.getProperty("db.password");
-//        Connection conn = DriverManager.getConnection(url, username, password);
 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");

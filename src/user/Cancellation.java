@@ -5,8 +5,11 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +17,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.sql.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +44,11 @@ public class Cancellation extends javax.swing.JFrame {
         
         TableHeader();
         setTableValue();
-        con = makeCon();
+        try {
+            con = makeCon();
+        } catch (IOException ex) {
+            Logger.getLogger(Cancellation.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         txt_cancel_from.setEditable(false);
         txt_cancel_to.setEditable(false);
@@ -54,10 +62,22 @@ public class Cancellation extends javax.swing.JFrame {
         
     }
     
-    private Connection makeCon(){
+    private Connection makeCon() throws IOException{
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        if (input != null) {
+            props.load(input);
+        } else {
+            throw new FileNotFoundException("Property file not found");
+        }
+
+        String url = props.getProperty("db.url");
+        String username = props.getProperty("db.username");
+        String password = props.getProperty("db.password");
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/city_travels", "root", "mysql@123");
+            Connection con = DriverManager.getConnection(url, username, password);
             return con;
         }
         catch(ClassNotFoundException | SQLException e){

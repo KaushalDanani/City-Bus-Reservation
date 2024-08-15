@@ -1,6 +1,9 @@
 package admin;
 
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -45,10 +48,22 @@ public class Edit_Bus extends javax.swing.JFrame {
         setData();
     }
     
-    private Connection makeCon(){
+    private Connection makeCon() throws IOException{
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        if (input != null) {
+            props.load(input);
+        } else {
+            throw new FileNotFoundException("Property file not found");
+        }
+
+        String url = props.getProperty("db.url");
+        String username = props.getProperty("db.username");
+        String password = props.getProperty("db.password");
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/city_travels", "root", "mysql@123");
+            Connection con = DriverManager.getConnection(url, username, password);
             return con;
         }
         catch(ClassNotFoundException | SQLException e){
@@ -99,7 +114,7 @@ public class Edit_Bus extends javax.swing.JFrame {
         edit_year.setSelectedItem(s[2]);
     }
     
-    private void getData(){
+    private void getData() throws IOException{
         from = txt_edit_from.getText();
         to = txt_edit_to.getText();
         new_bn = txt_edit_busno.getText();
@@ -296,8 +311,11 @@ public class Edit_Bus extends javax.swing.JFrame {
     }//GEN-LAST:event_edit_dateActionPerformed
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
-        // TODO add your handling code here:
-        getData();
+        try {
+            getData();
+        } catch (IOException ex) {
+            Logger.getLogger(Edit_Bus.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_updateActionPerformed
 
     private void edit_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edit_backActionPerformed

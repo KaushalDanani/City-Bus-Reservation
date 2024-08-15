@@ -5,11 +5,15 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -36,8 +40,12 @@ public class Booking extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         
-        this.con = makeCon();
-        setData(con);
+        try {
+            this.con = makeCon();
+            setData(con);
+        } catch (IOException ex) {
+            Logger.getLogger(Booking.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         TableHeader();
     }
@@ -70,10 +78,22 @@ public class Booking extends javax.swing.JFrame {
         
     }
     
-    private Connection makeCon(){
+    private Connection makeCon() throws IOException{
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        if (input != null) {
+            props.load(input);
+        } else {
+            throw new FileNotFoundException("Property file not found");
+        }
+
+        String url = props.getProperty("db.url");
+        String username = props.getProperty("db.username");
+        String password = props.getProperty("db.password");
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/city_travels", "root", "mysql@123");
+            Connection con = DriverManager.getConnection(url, username, password);
             return con;
         }
         catch(ClassNotFoundException | SQLException e){

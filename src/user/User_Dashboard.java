@@ -3,7 +3,11 @@ package user;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -33,8 +37,12 @@ public class User_Dashboard extends javax.swing.JFrame {
         
         txt_welcome.setText("Welcome  "+username+"...");
         
-        con = makeCon();
-        setData();
+        try {
+            con = makeCon();
+            setData();
+        } catch (IOException ex) {
+            Logger.getLogger(User_Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         TableHeader();
     }
@@ -66,10 +74,22 @@ public class User_Dashboard extends javax.swing.JFrame {
         
     }
     
-    private Connection makeCon(){
+    private Connection makeCon() throws IOException{
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        if (input != null) {
+            props.load(input);
+        } else {
+            throw new FileNotFoundException("Property file not found");
+        }
+
+        String url = props.getProperty("db.url");
+        String username = props.getProperty("db.username");
+        String password = props.getProperty("db.password");
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/city_travels", "root", "mysql@123");
+            Connection con = DriverManager.getConnection(url, username, password);
             return con;
         }
         catch(ClassNotFoundException | SQLException e){
