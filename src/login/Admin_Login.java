@@ -2,6 +2,12 @@ package login;
 
 import admin.Admin_Dashboard;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class Admin_Login extends javax.swing.JFrame {
@@ -115,9 +121,22 @@ public class Admin_Login extends javax.swing.JFrame {
 
     private void btn_adminlogin_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_adminlogin_loginActionPerformed
         // TODO add your handling code here:
+        Properties props = new Properties();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("resources/config.properties");
+        try {
+            if (input != null) {
+                props.load(input);
+            } 
+            else {
+                throw new FileNotFoundException("Property file not found");
+            }
+        } 
+        catch (IOException ex) {
+            Logger.getLogger(Admin_Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        String admin_id = "admin";
-        String admin_pwd = "admin@123";
+        String admin_id = props.getProperty("admin.id");
+        String admin_pwd = props.getProperty("admin.password");
         String ent_username = txt_adminid.getText();
         String ent_pwd = txt_adminpwd.getText();
         
